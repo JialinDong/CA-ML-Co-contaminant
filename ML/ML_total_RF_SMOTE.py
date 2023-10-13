@@ -66,37 +66,7 @@ def main( ):
     file_name = args.which_data
     print('file_name',file_name)
 
-    if file_name == 'example':
-        print('example dataset -- make')
-        ### 用于平衡数据的 SMOTE
-        # 生成和绘制合成二元分类问题
-        # define dataset
-        X, y = make_classification(n_samples=10000, n_features=2, n_redundant=0,
-                                   n_clusters_per_class=1, weights=[0.99], flip_y=0, random_state=1)
-        # summarize class distribution
-        counter = Counter(y)
-        print(counter)
-        # scatter plot of examples by class label
-        for label, _ in counter.items():
-            row_ix = where(y == label)[0]
-            pyplot.scatter(X[row_ix, 0], X[row_ix, 1], label=str(label))
-        pyplot.legend()
-        pyplot.show()
-
-        # 接下来使用 SMOTE 对少数类进行过采样并绘制转换后的数据集
-        oversample = SMOTE()
-        X, y = oversample.fit_resample(X, y)
-        # summarize the new class distribution
-        counter = Counter(y)
-        print(counter)
-        # scatter plot of examples by class label
-        for label, _ in counter.items():
-            row_ix = where(y == label)[0]
-            pyplot.scatter(X[row_ix, 0], X[row_ix, 1], label=str(label))
-        pyplot.legend()
-        pyplot.show()
-
-    elif file_name == 'pfas_data':
+    if file_name == 'pfas_data':
         print('pfas dataset')
         # Load Data
         df = pd.read_csv("GW_MAIN_PFAS_14_subset_pfas_total.csv")
@@ -338,7 +308,6 @@ def main( ):
         plt.show()
         '''
 
-
         # importance
         col = list(X_train.columns.values)
         importances = clf.feature_importances_
@@ -370,31 +339,6 @@ def main( ):
         x_values = list(range(len(importances)))
         print(x_values)
 
-
-    # reviewer's comments:
-    elif file_name == 'pfas_ABN':
-        print('pfas ml training')
-        # Load Data
-        df = pd.read_csv("GW_MAIN_PFAS_14_subset_pfas_total.csv")
-        # Training And Test Data -- drop location cols
-        df = df.drop(columns=['latitude','longitude','gm_gis_dwr_region'])     # 'latitude','longitude',
-
-        # change date to year & month -- Timestamp To Date
-        # df['Year'] = pd.DatetimeIndex(df['date']).year
-        # df['Year'] = df['date'].dt.year
-        # df['Month'] = df['date'].dt.month
-        # df = df.drop(columns=['date'])  # drop col
-
-        X = df.iloc[:, 0:112].values      # delete .values for rf importance  [new:112 -- no lat/long/date + year/month]
-        #y = df.iloc[:, 113:].values        # .values for XBBoost, catb, lightb
-        y = np.array(df["Label_PFAS_total"])
-
-        # 自适应合成采样 (ADASYN) -- 生成与少数类中样本的密度成反比的合成样本
-        print('ADASYN')
-        oversample = ADASYN()
-        X, y = oversample.fit_resample(X, y)    # Counter({0: 19121, 1: 19121})
-        # split to train, test
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
 
 if __name__ == "__main__":
